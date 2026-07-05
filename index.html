@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Гончарная мастерская «Глина» — Версия 1</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <style> .phone-container { max-width: 412px; min-height: 844px; } </style>
+</head>
+<body class="bg-gray-900 flex justify-center items-center min-h-screen text-gray-100 font-sans p-4">
+    <div class="phone-container w-full bg-gray-800 rounded-3xl shadow-2xl border-4 border-gray-700 overflow-hidden flex flex-col relative">
+        <div class="bg-gray-800 text-xs px-6 py-2 flex justify-between items-center text-gray-400 border-b border-gray-700 select-none">
+            <span>18:45</span> <div class="flex space-x-1"><span>LTE</span><span>🔋 88%</span></div>
+        </div>
+        <div id="app-content" class="flex-1 p-5 overflow-y-auto flex flex-col justify-between">
+            </div>
+    </div>
+
+    <script>
+        let state = { currentScreen: 'auth', userPhone: '' };
+
+        function render() {
+            const container = document.getElementById('app-content');
+            container.innerHTML = '';
+
+            if (state.currentScreen === 'auth') {
+                container.innerHTML = `
+                    <div class="my-auto text-center">
+                        <h1 class="text-3xl font-bold text-amber-500 mb-2">ГЛИНА</h1>
+                        <p class="text-gray-400 text-sm mb-8">Мобильное приложение студии</p>
+                        <div class="mb-4 text-left">
+                            <label class="block text-xs uppercase text-gray-400 mb-1 font-semibold">Номер телефона</label>
+                            <input id="auth-phone" type="tel" placeholder="+7 (999) 999-99-99" class="w-full bg-gray-700 border border-gray-600 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-amber-500">
+                        </div>
+                        <div class="mb-6 text-left">
+                            <label class="block text-xs uppercase text-gray-400 mb-1 font-semibold">SMS-код (Тест: 1111)</label>
+                            <input id="auth-code" type="text" maxlength="4" placeholder="0000" class="w-full bg-gray-700 border border-gray-600 rounded-xl px-4 py-3 text-center tracking-widest text-xl font-bold text-white focus:outline-none focus:border-amber-500">
+                        </div>
+                        <button onclick="handleLogin()" class="w-full bg-amber-600 hover:bg-amber-500 text-white font-bold py-3 px-4 rounded-xl transition-colors">Войти</button>
+                    </div>
+                `;
+            } else if (state.currentScreen === 'schedule') {
+                container.innerHTML = `<div class="p-4 text-center text-gray-400">Экран расписания (В разработке...)</div>`;
+            }
+        }
+
+        // БАГ 1: Нет проверки заполненности поля телефона
+        function handleLogin() {
+            const phone = document.getElementById('auth-phone').value;
+            const code = document.getElementById('auth-code').value;
+            if (code === '1111') {
+                state.userPhone = phone;
+                state.currentScreen = 'schedule';
+                render();
+            } else {
+                alert("Ошибка: Неверный SMS-код! Введите '1111' для теста.");
+            }
+        }
+
+        render();
+    </script>
+</body>
+</html>
