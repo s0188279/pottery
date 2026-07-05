@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Гончарная мастерская «Глина» — Версия 1</title>
+    <title>Гончарная мастерская «Глина» — Версия 2</title>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <style> .phone-container { max-width: 412px; min-height: 844px; } </style>
 </head>
@@ -12,11 +12,16 @@
         <div class="bg-gray-800 text-xs px-6 py-2 flex justify-between items-center text-gray-400 border-b border-gray-700 select-none">
             <span>18:45</span> <div class="flex space-x-1"><span>LTE</span><span>🔋 88%</span></div>
         </div>
-        <div id="app-content" class="flex-1 p-5 overflow-y-auto flex flex-col justify-between">
-            </div>
+        <div id="app-content" class="flex-1 p-5 overflow-y-auto flex flex-col justify-between"></div>
     </div>
 
     <script>
+        const MOCK_SLOTS = [
+            { id: "slot-1", title: "Новичковый круг", type: "KRUG", master: "Мастер Иван", time: "Завтра, 12:00 - 14:30", price: 2500, total_seats: 6, free_seats: 4 },
+            { id: "slot-2", title: "Простая лепка для новичков", type: "LEPKA", master: "Мастер Дарья", time: "Вторник, 15:00 - 17:00", price: 1800, total_seats: 6, free_seats: 1 },
+            { id: "slot-3", title: "Продвинутый круг", type: "KRUG", master: "Мастер Иван", time: "Четверг, 18:30 - 21:00", price: 3000, total_seats: 10, free_seats: 0 }
+        ];
+
         let state = { currentScreen: 'auth', userPhone: '' };
 
         function render() {
@@ -39,12 +44,49 @@
                         <button onclick="handleLogin()" class="w-full bg-amber-600 hover:bg-amber-500 text-white font-bold py-3 px-4 rounded-xl transition-colors">Войти</button>
                     </div>
                 `;
-            } else if (state.currentScreen === 'schedule') {
-                container.innerHTML = `<div class="p-4 text-center text-gray-400">Экран расписания (В разработке...)</div>`;
+            } 
+            else if (state.currentScreen === 'schedule') {
+                let slotsHtml = MOCK_SLOTS.map(slot => {
+                    const isFull = slot.free_seats === 0;
+                    return `
+                        <div class="bg-gray-700/50 border border-gray-700 rounded-2xl p-4 mb-4 flex flex-col justify-between ${isFull ? 'opacity-60' : ''}">
+                            <div>
+                                <div class="flex justify-between items-start mb-1">
+                                    <h3 class="font-bold text-lg text-amber-100">${slot.title}</h3>
+                                    <span class="text-xs bg-gray-800 text-gray-400 px-2 py-1 rounded-md font-mono">${slot.type}</span>
+                                </div>
+                                <p class="text-sm text-gray-300 mb-1">👤 ${slot.master}</p>
+                                <p class="text-xs text-gray-400 mb-3">📅 ${slot.time}</p>
+                            </div>
+                            <div class="flex justify-between items-center pt-2 border-t border-gray-700/50">
+                                <div>
+                                    <p class="text-xs text-gray-400">Мест: <span class="font-bold ${slot.free_seats <= 1 ? 'text-red-400' : 'text-green-400'}">${slot.free_seats}/${slot.total_seats}</span></p>
+                                    <p class="text-md font-bold text-amber-500">${slot.price} ₽</p>
+                                </div>
+                                ${isFull 
+                                    ? `<button disabled class="bg-gray-800 text-gray-500 font-semibold py-2 px-4 rounded-xl text-sm cursor-not-allowed">Мест нет</button>`
+                                    : `<button onclick="alert('Фича бронирования в разработке')" class="bg-amber-600 hover:bg-amber-500 text-white font-semibold py-2 px-4 rounded-xl text-sm transition-colors">Запись</button>`
+                                }
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+
+                container.innerHTML = `
+                    <div class="w-full">
+                        <div class="flex justify-between items-center mb-6">
+                            <div>
+                                <h2 class="text-xl font-bold">Ближайшие занятия</h2>
+                                <p class="text-xs text-gray-400">Расписание на 7 дней вперед</p>
+                            </div>
+                            <span class="bg-amber-900/40 text-amber-400 text-xs font-bold px-3 py-1 rounded-full border border-amber-800/50">👑 Постоянный клиент</span>
+                        </div>
+                        <div class="slots-container">${slotsHtml}</div>
+                    </div>
+                `;
             }
         }
 
-        // БАГ 1: Нет проверки заполненности поля телефона
         function handleLogin() {
             const phone = document.getElementById('auth-phone').value;
             const code = document.getElementById('auth-code').value;
