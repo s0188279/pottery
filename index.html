@@ -163,7 +163,13 @@
         function handleLogin() {
             const phone = document.getElementById('auth-phone').value;
             const code = document.getElementById('auth-code').value;
-
+        
+            // ИСПРАВЛЕНИЕ: Добавили валидацию телефона
+            if(!phone || phone.trim().length < 10) {
+                alert("Ошибка: Введите корректный номер телефона!");
+                return;
+            }
+        
             if (code === '1111') {
                 state.userPhone = phone;
                 changeScreen('schedule');
