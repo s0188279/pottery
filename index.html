@@ -188,6 +188,10 @@
         }
 
         function confirmBooking() {
+            // ИСПРАВЛЕНИЕ: Динамически уменьшаем количество мест
+            if (state.selectedSlot && state.selectedSlot.free_seats > 0) {
+                state.selectedSlot.free_seats -= 1;
+            }
             changeScreen('success');
         }
 
